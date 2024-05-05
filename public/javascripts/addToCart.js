@@ -87,7 +87,10 @@ const calculateAndDisplayTotals = (subtotal, subtotalPriceId, tpsPriceId, tvqPri
 const modifyQuantity = (productId, change) => {
     const product = cart.find(p => p.id === productId);
     if (product) {
-        product.quantity += change;
+
+        const newQuantity = product.quantity + change;
+
+        product.quantity = Math.max(0, Math.min(1000, newQuantity));
 
         if (product.quantity > 0) {
             if (timeouts[productId]) {
@@ -95,7 +98,6 @@ const modifyQuantity = (productId, change) => {
                 delete timeouts[productId];
             }
         } else {
-            product.quantity = 0;
             if (!timeouts[productId]) {
                 timeouts[productId] = setTimeout(() => {
                     if (product.quantity === 0) {
@@ -106,6 +108,7 @@ const modifyQuantity = (productId, change) => {
                 }, 3000);
             }
         }
+        // Update the cart UI
         updateCartUI();
     }
 };
